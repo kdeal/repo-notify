@@ -89,19 +89,19 @@ fn main() {
         if gh_commit.sha != cur_sha {
             repo.message = Some(gh_commit.commit.message.to_string());
             repo.sha = Some(gh_commit.sha.to_string());
-            report_update(name.clone(), gh_commit.commit.message.to_string(), &tasks, &config.todoist_token);
+            report_update(name.clone(), gh_commit.commit.message.to_string(), gh_commit.sha.to_string(), &tasks, &config.todoist_token);
             println!("{} was updated", name);
         }
     }
     config::save(repos, config);
 }
 
-fn report_update(name: String, message: String, tasks: &Vec<Task>, token: &String) -> () {
+fn report_update(name: String, message: String, sha: String, tasks: &Vec<Task>, token: &String) -> () {
     for task in tasks {
         if task.content.contains(name.as_str()) & !task.completed {
             let comment = NewComment {
                 task_id: Some(task.id),
-                content: message,
+                content: format!("{}\n\n sha: {}", message, sha),
                 ..NewComment::default()
             };
             todoist::comment(comment, token);
@@ -112,7 +112,7 @@ fn report_update(name: String, message: String, tasks: &Vec<Task>, token: &Strin
     let task_id = todoist::create_task(NewTask{content: content, ..NewTask::default()}, token);
     let comment = NewComment {
         task_id: Some(task_id),
-        content: message,
+        content: format!("{}\n\n sha: {}", message, sha),
         ..NewComment::default()
     };
     todoist::comment(comment, token);
