@@ -42,17 +42,11 @@ pub fn load() -> (Repos, Option<Config>) {
 }
 
 pub fn save(repos: Repos, config: Config) {
-    let mut table: Table = Table::new();
-
-    for (name, repo) in repos {
-        table.insert(name, Value::try_from(repo).unwrap());
-    }
-
     let mut config_table: Table = Table::new();
     config_table.insert("config".to_string(), Value::try_from(config).unwrap());
 
     let config_contents = toml::to_string_pretty(&config_table).unwrap();
-    let repos_contents = toml::to_string_pretty(&table).unwrap();
+    let repos_contents = toml::to_string_pretty(&repos).unwrap();
 
     let mut config_file = File::create("./repos.toml")
         .expect("couldn't open file for write");

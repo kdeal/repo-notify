@@ -59,6 +59,7 @@ pub fn get_tasks(token: &String) -> Vec<Task> {
     resp.json().unwrap()
 }
 
+// TODO: Make shared post function
 pub fn comment(comment: NewComment, token: &String) -> () {
     let url = format!("{}/comments?token={}", TODOIST_API, token);
     let client = reqwest::Client::new().unwrap();

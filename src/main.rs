@@ -53,6 +53,7 @@ struct Tree {
     sha: String,
 }
 
+// TODO: Move github stuff to module
 fn get_top_commit(client: &Github, owner: &str, repo: &str) -> Result<GithubCommit, ()> {
     let req = client.get().repos().owner(owner).repo(repo).commits().execute();
     if let Ok((_, _, json)) = req {
@@ -72,6 +73,7 @@ fn main() {
     }
     let config = config.unwrap();
 
+    // TODO: Make a client instead
     let tasks = todoist::get_tasks(&config.todoist_token);
 
     let client = Github::new(config.github_token.as_str()).unwrap();
