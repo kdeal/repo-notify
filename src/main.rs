@@ -1,4 +1,5 @@
 extern crate github_rs;
+extern crate reqwest;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -7,6 +8,11 @@ extern crate toml;
 use github_rs::client::Github;
 
 mod config;
+mod todoist;
+
+use todoist::Task;
+use todoist::NewTask;
+use todoist::NewComment;
 
 #[derive(Deserialize, Debug)]
 struct GithubCommit {
@@ -59,8 +65,16 @@ fn get_top_commit(client: &Github, owner: &str, repo: &str) -> Result<GithubComm
 }
 
 fn main() {
-    let mut repos = config::load();
-    let client = Github::new("<token>").unwrap();
+    let (mut repos, config) = config::load();
+    if let None = config {
+        println!("Must set token in config");
+        return;
+    }
+    let config = config.unwrap();
+
+    let tasks = todoist::get_tasks(&config.todoist_token);
+
+    let client = Github::new(config.github_token.as_str()).unwrap();
     for (name, repo) in repos.iter_mut() {
         let split: Vec<&str> = name.split('/').collect();
         let owner = split[0];
@@ -75,9 +89,31 @@ fn main() {
         if gh_commit.sha != cur_sha {
             repo.message = Some(gh_commit.commit.message.to_string());
             repo.sha = Some(gh_commit.sha.to_string());
+            report_update(name.clone(), gh_commit.commit.message.to_string(), &tasks, &config.todoist_token);
             println!("{} was updated", name);
         }
     }
+    config::save(repos, config);
+}
 
-    config::save(repos);
+fn report_update(name: String, message: String, tasks: &Vec<Task>, token: &String) -> () {
+    for task in tasks {
+        if task.content.contains(name.as_str()) & !task.completed {
+            let comment = NewComment {
+                task_id: Some(task.id),
+                content: message,
+                ..NewComment::default()
+            };
+            todoist::comment(comment, token);
+            return;
+        }
+    }
+    let content = format!("Update {}", name);
+    let task_id = todoist::create_task(NewTask{content: content, ..NewTask::default()}, token);
+    let comment = NewComment {
+        task_id: Some(task_id),
+        content: message,
+        ..NewComment::default()
+    };
+    todoist::comment(comment, token);
 }
