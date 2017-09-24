@@ -6,13 +6,13 @@ use toml;
 use toml::value::Table;
 use toml::value::Value;
 
-#[derive(Clone,Deserialize,Debug,Serialize)]
+#[derive(Clone, Deserialize, Debug, Serialize)]
 pub struct Repo {
     pub message: Option<String>,
     pub sha: Option<String>,
 }
 
-#[derive(Clone,Deserialize,Debug,Serialize)]
+#[derive(Clone, Deserialize, Debug, Serialize)]
 pub struct Config {
     pub github_token: String,
     pub todoist_token: String,
@@ -21,12 +21,12 @@ pub struct Config {
 type Repos = BTreeMap<String, Repo>;
 
 pub fn load() -> (Repos, Option<Config>) {
-    let mut config_file = File::open("./repos.toml")
-        .expect("file not found");
+    let mut config_file = File::open("./repos.toml").expect("file not found");
 
     let mut contents = String::new();
-    config_file.read_to_string(&mut contents)
-        .expect("something went wrong reading the file");
+    config_file.read_to_string(&mut contents).expect(
+        "something went wrong reading the file",
+    );
     let mut repos: Repos = BTreeMap::new();
     let table: Table = toml::from_str(&contents).unwrap();
     let mut config = None;
@@ -48,12 +48,14 @@ pub fn save(repos: Repos, config: Config) {
     let config_contents = toml::to_string_pretty(&config_table).unwrap();
     let repos_contents = toml::to_string_pretty(&repos).unwrap();
 
-    let mut config_file = File::create("./repos.toml")
-        .expect("couldn't open file for write");
-    config_file.write_all(config_contents.as_bytes())
-        .expect("failed to write config");
-    config_file.write_all("\n".as_bytes())
-        .expect("failed to write config");
-    config_file.write_all(repos_contents.as_bytes())
-        .expect("failed to write config");
+    let mut config_file = File::create("./repos.toml").expect("couldn't open file for write");
+    config_file.write_all(config_contents.as_bytes()).expect(
+        "failed to write config",
+    );
+    config_file.write_all("\n".as_bytes()).expect(
+        "failed to write config",
+    );
+    config_file.write_all(repos_contents.as_bytes()).expect(
+        "failed to write config",
+    );
 }

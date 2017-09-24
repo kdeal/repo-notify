@@ -55,7 +55,13 @@ struct Tree {
 
 // TODO: Move github stuff to module
 fn get_top_commit(client: &Github, owner: &str, repo: &str) -> Result<GithubCommit, ()> {
-    let req = client.get().repos().owner(owner).repo(repo).commits().execute();
+    let req = client
+        .get()
+        .repos()
+        .owner(owner)
+        .repo(repo)
+        .commits()
+        .execute();
     if let Ok((_, _, json)) = req {
         if let Some(json) = json {
             let mut commits: Vec<GithubCommit> = serde_json::from_value(json).unwrap();
@@ -91,14 +97,26 @@ fn main() {
         if gh_commit.sha != cur_sha {
             repo.message = Some(gh_commit.commit.message.to_string());
             repo.sha = Some(gh_commit.sha.to_string());
-            report_update(name.clone(), gh_commit.commit.message.to_string(), gh_commit.sha.to_string(), &tasks, &config.todoist_token);
+            report_update(
+                name.clone(),
+                gh_commit.commit.message.to_string(),
+                gh_commit.sha.to_string(),
+                &tasks,
+                &config.todoist_token,
+            );
             println!("{} was updated", name);
         }
     }
     config::save(repos, config);
 }
 
-fn report_update(name: String, message: String, sha: String, tasks: &Vec<Task>, token: &String) -> () {
+fn report_update(
+    name: String,
+    message: String,
+    sha: String,
+    tasks: &Vec<Task>,
+    token: &String,
+) -> () {
     for task in tasks {
         if task.content.contains(name.as_str()) & !task.completed {
             let comment = NewComment {
@@ -111,7 +129,13 @@ fn report_update(name: String, message: String, sha: String, tasks: &Vec<Task>, 
         }
     }
     let content = format!("Update {}", name);
-    let task_id = todoist::create_task(NewTask{content: content, ..NewTask::default()}, token);
+    let task_id = todoist::create_task(
+        NewTask {
+            content: content,
+            ..NewTask::default()
+        },
+        token,
+    );
     let comment = NewComment {
         task_id: Some(task_id),
         content: format!("{}\n\n sha: {}", message, sha),

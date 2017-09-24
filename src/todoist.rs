@@ -2,7 +2,7 @@ use reqwest;
 
 static TODOIST_API: &str = "https://beta.todoist.com/API/v8";
 
-#[derive(Deserialize,Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Task {
     pub id: u32,
     pub project_id: u32,
@@ -17,7 +17,7 @@ pub struct Task {
     pub comment_count: u32,
 }
 
-#[derive(Deserialize,Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Due {
     pub string: String,
     pub date: String,
@@ -25,7 +25,7 @@ pub struct Due {
     pub timezone: Option<String>,
 }
 
-#[derive(Debug,Default,Serialize)]
+#[derive(Debug, Default, Serialize)]
 pub struct NewTask {
     pub content: String,
     pub project_id: Option<u32>,
@@ -38,14 +38,14 @@ pub struct NewTask {
     pub due_lang: Option<String>,
 }
 
-#[derive(Debug,Default,Serialize)]
+#[derive(Debug, Default, Serialize)]
 pub struct NewComment {
     pub task_id: Option<u32>,
     pub project_id: Option<u32>,
     pub content: String,
 }
 
-#[derive(Deserialize,Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Created {
     pub id: u32,
 }
@@ -63,18 +63,26 @@ pub fn get_tasks(token: &String) -> Vec<Task> {
 pub fn comment(comment: NewComment, token: &String) -> () {
     let url = format!("{}/comments?token={}", TODOIST_API, token);
     let client = reqwest::Client::new().unwrap();
-    let resp = client.post(url.as_str()).unwrap()
-        .json(&comment).unwrap()
-        .send().unwrap();
+    let resp = client
+        .post(url.as_str())
+        .unwrap()
+        .json(&comment)
+        .unwrap()
+        .send()
+        .unwrap();
     assert!(resp.status().is_success());
 }
 
 pub fn create_task(task: NewTask, token: &String) -> u32 {
     let url = format!("{}/tasks?token={}", TODOIST_API, token);
     let client = reqwest::Client::new().unwrap();
-    let mut resp = client.post(url.as_str()).unwrap()
-        .json(&task).unwrap()
-        .send().unwrap();
+    let mut resp = client
+        .post(url.as_str())
+        .unwrap()
+        .json(&task)
+        .unwrap()
+        .send()
+        .unwrap();
     assert!(resp.status().is_success());
     let created: Created = resp.json().unwrap();
     created.id
