@@ -15,4 +15,20 @@ I recommend moving repo-notify to `~/.local/bin/` and adding
 `export PATH=$PATH:~/.local/bin/` to your `~/.bashrc`.
 
 ## Usage
-This needs to be fleshed out more...
+
+### Setup
+1. `repo-notify setup` - set your Github and Todoist api token and add
+   the first repository to your repository watch list (settings saved to
+    `~/.config/repo-notify.toml`)
+
+1. `repo-notify add <repository>` - add the rest of the repositories to
+   your repository watch list
+
+
+### Check
+`repo-notify check` to check for repository updates or add cron to do this
+automatically
+
+#### Example Cron
+
+    0 0 * * * ~/.local/bin/repo-notify check >/dev/null 2>&1
