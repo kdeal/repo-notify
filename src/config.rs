@@ -48,9 +48,9 @@ pub fn load<'a>(config_file: &'a str) -> (Repos, Config) {
     let mut config_file = File::open(config_file).expect("file not found");
 
     let mut contents = String::new();
-    config_file.read_to_string(&mut contents).expect(
-        "something went wrong reading the file",
-    );
+    config_file
+        .read_to_string(&mut contents)
+        .expect("something went wrong reading the file");
     let table: Table = toml::from_str(&contents).unwrap();
 
     for (name, repo) in table {
@@ -77,13 +77,13 @@ pub fn save<'a>(config_file: &'a str, repos: Repos, config: Config) {
         println!("! {:?}", why.kind());
     });
     let mut config_file = File::create(config_file).expect("couldn't open file for write");
-    config_file.write_all(config_contents.as_bytes()).expect(
-        "failed to write config",
-    );
-    config_file.write_all("\n".as_bytes()).expect(
-        "failed to write config",
-    );
-    config_file.write_all(repos_contents.as_bytes()).expect(
-        "failed to write config",
-    );
+    config_file
+        .write_all(config_contents.as_bytes())
+        .expect("failed to write config");
+    config_file
+        .write_all("\n".as_bytes())
+        .expect("failed to write config");
+    config_file
+        .write_all(repos_contents.as_bytes())
+        .expect("failed to write config");
 }
