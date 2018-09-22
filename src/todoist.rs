@@ -50,8 +50,6 @@ pub struct Created {
     pub id: u32,
 }
 
-
-
 pub fn get_tasks(token: &String) -> Vec<Task> {
     let url = format!("{}/tasks?token={}", TODOIST_API, token);
     let mut resp = reqwest::get(url.as_str()).unwrap();
