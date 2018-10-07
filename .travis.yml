@@ -5,6 +5,14 @@ rust:
   - stable
   - nightly
 
+matrix:
+  allow_failures:
+    - rust: nightly
+
+branches:
+  only:
+    - master
+
 before_script: rustup component add rustfmt-preview
 script:
   - "cargo fmt -- --check"
