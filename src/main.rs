@@ -42,7 +42,8 @@ fn get_args<'a>() -> ArgMatches<'a> {
                 .long("config-file")
                 .short("c")
                 .takes_value(true),
-        ).subcommand(
+        )
+        .subcommand(
             SubCommand::with_name("add")
                 .about("Add a repository to the watch list")
                 .arg(
@@ -51,7 +52,8 @@ fn get_args<'a>() -> ArgMatches<'a> {
                         .required(true)
                         .takes_value(true),
                 ),
-        ).subcommand(SubCommand::with_name("check").about("Check for repo updates"))
+        )
+        .subcommand(SubCommand::with_name("check").about("Check for repo updates"))
         .subcommand(SubCommand::with_name("setup").about("Do the initial setup"))
         .get_matches()
 }
