@@ -1,4 +1,5 @@
 extern crate clap;
+extern crate dirs;
 extern crate github_rs;
 extern crate reqwest;
 extern crate rpassword;

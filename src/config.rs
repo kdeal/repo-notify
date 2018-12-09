@@ -1,10 +1,11 @@
 use std::collections::BTreeMap;
-use std::env::home_dir;
 use std::fs::create_dir_all;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::path::PathBuf;
+
+use dirs::home_dir;
 use toml;
 use toml::value::Table;
 use toml::value::Value;
